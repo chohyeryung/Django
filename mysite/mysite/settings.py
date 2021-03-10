@@ -25,7 +25,7 @@ SECRET_KEY = 'dwim_^_rp#ma@+-%hd&ket=sg9bgpl%u1+x@c4fbp@%4@6ls%%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
