@@ -31,19 +31,19 @@ class QuestionIndexViewTests(TestCase):
     def test_no_questions(self):
         response = self.client.get(reverse('polls:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No polls are available.")
+        self.assertContains(response, 'No polls are available.')
 
         self.assertQuerysetEqual(response.context['lastest_question_list'], [])
 
     def test_past_question(self):
-        create_question(question_text="Past question.", days=-30)   #30일 전
+        create_question(question_text='Past question.', days=-30)   #30일 전
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(response.context['lastest_question_list'], ['<Question:Past question.>'])
 
     def test_future_question(self):
-        create_question(question_text="Future question.", days=30)  #30일 후
+        create_question(question_text='Future question.', days=30)  #30일 후
         response = self.client.get(reverse('polls:index'))
-        self.assertContains(response, "No polls are available.")
+        self.assertContains(response, 'No polls are available.')
 
         self.assertQuerysetEqual(response.context['lastest_question_list'], [])
 
@@ -58,4 +58,17 @@ class QuestionIndexViewTests(TestCase):
         create_question(question_text='Past question 2.', days=-5)   #5일 전
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(response.context['lastest_question_list'], ['<Question:Past question 2.>', '<Question: Past question 1.>'])
+
+class QuestionDetailViewTests(TestCase):
+    def test_future_question(self):
+        future_question = create_question(question_text='Future question.', days=5)
+        url = reverse('polls:detail', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)  #미래는 안보여야함
+
+    def test_past_question(self):
+        past_question = create_question(question_text='Past Question.', days=-5)
+        url = reverse('polls:detail', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question.question_text)
 
